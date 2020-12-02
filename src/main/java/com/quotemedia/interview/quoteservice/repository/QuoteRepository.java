@@ -23,7 +23,8 @@ public class QuoteRepository {
 
 	public List<Quote> getQuoteAtDay(String symbol, String day) {
 
-		return jdbcTemplate.query("SELECT SYMBOL, DAY, BID ,ASK FROM QUOTE WHERE SYMBOL = ? AND DAY = ?",
+		return jdbcTemplate.query(
+				"SELECT SYMBOL, DAY, BID ,ASK FROM QUOTE WHERE SYMBOL = ? AND DAY = ? ORDER BY BID DESC LIMIT 1",
 				new Object[] { symbol, day }, new QuoteMapper());
 	}
 

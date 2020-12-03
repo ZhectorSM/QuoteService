@@ -18,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import com.quotemedia.interview.quoteservice.dto.QuoteResponse;
+import com.quotemedia.interview.quoteservice.dto.SymbolResponse;
 
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -98,45 +99,42 @@ public class QuoteMediaApiTest {
 	}
 
 	@Test
-	public void testGetQuoteDaySuccess() throws Exception {
+	public void testGetSymbolDaySuccess() throws Exception {
 
-		String symbol = "MSFT";
 		String day = "20200103";
-		QuoteResponse qResponse = new QuoteResponse(3.74f, 4.33f);
+		SymbolResponse sResponse = new SymbolResponse("GOOG");
 
-		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/" + day;
+		String baseUrl = base.toString() + "/symbols/" + day + "/highest";
 		URI uri = new URI(baseUrl);
 
-		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
+		ResponseEntity<SymbolResponse> result = restTemplate.getForEntity(uri, SymbolResponse.class);
 
 		Assert.assertEquals(HttpStatus.OK, result.getStatusCode());
-		Assert.assertEquals(qResponse, result.getBody());
+		Assert.assertEquals(sResponse, result.getBody());
 	}
 
 	@Test
-	public void testGetQuoteDayBadRequest() throws Exception {
+	public void testGetSymbolDayBadRequest() throws Exception {
 
-		String symbol = "MSFT";
 		String day = "2020-01-03";
 
-		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/" + day;
+		String baseUrl = base.toString() + "/symbols/" + day + "/highest";
 		URI uri = new URI(baseUrl);
 
-		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
+		ResponseEntity<SymbolResponse> result = restTemplate.getForEntity(uri, SymbolResponse.class);
 
 		Assert.assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
 	}
 
 	@Test
-	public void testGetQuoteDayNotFound() throws Exception {
+	public void testGetSymbolDayNotFound() throws Exception {
 
-		String symbol = "MSFT";
 		String day = "20200120";
 
-		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/" + day;
+		String baseUrl = base.toString() + "/symbols/" + day + "/highest";
 		URI uri = new URI(baseUrl);
 
-		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
+		ResponseEntity<SymbolResponse> result = restTemplate.getForEntity(uri, SymbolResponse.class);
 
 		Assert.assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
 	}
@@ -147,9 +145,8 @@ public class QuoteMediaApiTest {
 		restTemplate = new TestRestTemplate();
 
 		String symbol = "MSFT";
-		String day = "20200103";
 
-		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/" + day;
+		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/latest";
 		URI uri = new URI(baseUrl);
 
 		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
@@ -163,9 +160,8 @@ public class QuoteMediaApiTest {
 		restTemplate = new TestRestTemplate("user", "wrongPwd");
 
 		String symbol = "MSFT";
-		String day = "20200103";
 
-		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/" + day;
+		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/latest";
 		URI uri = new URI(baseUrl);
 
 		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);

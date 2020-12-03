@@ -22,7 +22,7 @@ public class SpringSecurityConfig extends WebSecurityConfigurerAdapter {
 	}
 
 	@Autowired
-	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+	public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {		
 		auth.inMemoryAuthentication().withUser(AUTH_USER).password("{noop}" + AUTH_PWD).roles("USER");
 	}
 }

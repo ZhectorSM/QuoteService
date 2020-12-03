@@ -1,18 +1,21 @@
 package com.quotemedia.interview.quoteservice.test;
 
+import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.context.junit4.SpringRunner;
-import org.springframework.web.client.HttpClientErrorException;
-import org.springframework.web.client.RestTemplate;
 
 import com.quotemedia.interview.quoteservice.dto.QuoteResponse;
 
@@ -20,17 +23,31 @@ import com.quotemedia.interview.quoteservice.dto.QuoteResponse;
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 public class QuoteMediaApiTest {
 
+	@Value("${api.auth.user}")
+	private String AUTH_USER;
+
+	@Value("${api.auth.pwd}")
+	private String AUTH_PWD;
+
 	@LocalServerPort
 	int randomServerPort;
+
+	TestRestTemplate restTemplate;
+	URL base;
+
+	@Before
+	public void setUp() throws MalformedURLException {
+		restTemplate = new TestRestTemplate(AUTH_USER, AUTH_PWD);
+		base = new URL("http://localhost:" + randomServerPort);
+	}
 
 	@Test
 	public void testGetQuoteSuccess() throws Exception {
 
-		RestTemplate restTemplate = new RestTemplate();
 		String symbol = "MSFT";
 		QuoteResponse qResponse = new QuoteResponse(2.51f, 2.96f);
 
-		final String baseUrl = "http://localhost:" + randomServerPort + "/symbols/" + symbol + "/quotes/latest";
+		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/latest";
 		URI uri = new URI(baseUrl);
 
 		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
@@ -42,11 +59,10 @@ public class QuoteMediaApiTest {
 	@Test
 	public void testGetQuoteLoweCaseSuccess() throws Exception {
 
-		RestTemplate restTemplate = new RestTemplate();
 		String symbol = "msft";
 		QuoteResponse qResponse = new QuoteResponse(2.51f, 2.96f);
 
-		final String baseUrl = "http://localhost:" + randomServerPort + "/symbols/" + symbol + "/quotes/latest";
+		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/latest";
 		URI uri = new URI(baseUrl);
 
 		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
@@ -58,48 +74,37 @@ public class QuoteMediaApiTest {
 	@Test
 	public void testGetQuoteBadRequest() throws Exception {
 
-		RestTemplate restTemplate = new RestTemplate();
 		String symbol = "MSFTSSSS";
 
-		final String baseUrl = "http://localhost:" + randomServerPort + "/symbols/" + symbol + "/quotes/latest";
+		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/latest";
 		URI uri = new URI(baseUrl);
 
-		try {
-			restTemplate.getForEntity(uri, QuoteResponse.class);
-			Assert.fail("No exception was thrown");
-		} catch (HttpClientErrorException ex) {
-			// Verify bad request
-			Assert.assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
-		}
+		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
+
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
 	}
 
 	@Test
 	public void testGetQuoteNotFound() throws Exception {
 
-		RestTemplate restTemplate = new RestTemplate();
 		String symbol = "ABCD";
 
-		final String baseUrl = "http://localhost:" + randomServerPort + "/symbols/" + symbol + "/quotes/latest";
+		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/latest";
 		URI uri = new URI(baseUrl);
 
-		try {
-			restTemplate.getForEntity(uri, QuoteResponse.class);
-			Assert.fail("No exception was thrown");
-		} catch (HttpClientErrorException ex) {
-			// Verify not found
-			Assert.assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
-		}
+		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
+
+		Assert.assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
 	}
 
 	@Test
 	public void testGetQuoteDaySuccess() throws Exception {
 
-		RestTemplate restTemplate = new RestTemplate();
 		String symbol = "MSFT";
 		String day = "20200103";
 		QuoteResponse qResponse = new QuoteResponse(3.74f, 4.33f);
 
-		final String baseUrl = "http://localhost:" + randomServerPort + "/symbols/" + symbol + "/quotes/" + day;
+		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/" + day;
 		URI uri = new URI(baseUrl);
 
 		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
@@ -111,40 +116,61 @@ public class QuoteMediaApiTest {
 	@Test
 	public void testGetQuoteDayBadRequest() throws Exception {
 
-		RestTemplate restTemplate = new RestTemplate();
 		String symbol = "MSFT";
 		String day = "2020-01-03";
 
-		final String baseUrl = "http://localhost:" + randomServerPort + "/symbols/" + symbol + "/quotes/" + day;
+		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/" + day;
 		URI uri = new URI(baseUrl);
 
-		try {
-			restTemplate.getForEntity(uri, QuoteResponse.class);
-			Assert.fail("No exception was thrown");
-		} catch (HttpClientErrorException ex) {
-			// Verify bad request
-			Assert.assertEquals(HttpStatus.BAD_REQUEST, ex.getStatusCode());
-		}
+		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
+
+		Assert.assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
 	}
 
 	@Test
 	public void testGetQuoteDayNotFound() throws Exception {
 
-		RestTemplate restTemplate = new RestTemplate();
 		String symbol = "MSFT";
 		String day = "20200120";
 
-		final String baseUrl = "http://localhost:" + randomServerPort + "/symbols/" + symbol + "/quotes/" + day;
+		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/" + day;
 		URI uri = new URI(baseUrl);
 
-		try {
-			restTemplate.getForEntity(uri, QuoteResponse.class);
-			Assert.fail("No exception was thrown");
-		} catch (HttpClientErrorException ex) {
-			// Verify bad request
-			Assert.assertEquals(HttpStatus.NOT_FOUND, ex.getStatusCode());
-		}
+		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
 
+		Assert.assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
+	}
+
+	@Test
+	public void testGetQuoteNoAuth() throws Exception {
+		// Create new template with no auth
+		restTemplate = new TestRestTemplate();
+
+		String symbol = "MSFT";
+		String day = "20200103";
+
+		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/" + day;
+		URI uri = new URI(baseUrl);
+
+		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
+
+		Assert.assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
+	}
+
+	@Test
+	public void testGetQuoteWrongCredentials() throws Exception {
+		// Create new template with wrong auth data
+		restTemplate = new TestRestTemplate("user", "wrongPwd");
+
+		String symbol = "MSFT";
+		String day = "20200103";
+
+		String baseUrl = base.toString() + "/symbols/" + symbol + "/quotes/" + day;
+		URI uri = new URI(baseUrl);
+
+		ResponseEntity<QuoteResponse> result = restTemplate.getForEntity(uri, QuoteResponse.class);
+
+		Assert.assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
 	}
 
 }

@@ -42,6 +42,12 @@ public class QuoteMediaApiTest {
 		base = new URL("http://localhost:" + randomServerPort);
 	}
 
+	/**
+	 * SUCCESS (OK) test to get the most recent quote for a given symbol
+	 * 
+	 * @throws Exception
+	 */
+
 	@Test
 	public void testGetQuoteSuccess() throws Exception {
 
@@ -57,8 +63,14 @@ public class QuoteMediaApiTest {
 		Assert.assertEquals(qResponse, result.getBody());
 	}
 
+	/**
+	 * SUCCESS (OK) Lower Case test to get the most recent quote for a given symbol
+	 * 
+	 * @throws Exception
+	 */
+
 	@Test
-	public void testGetQuoteLoweCaseSuccess() throws Exception {
+	public void testGetQuoteLowerCaseSuccess() throws Exception {
 
 		String symbol = "msft";
 		QuoteResponse qResponse = new QuoteResponse(2.51f, 2.96f);
@@ -71,6 +83,12 @@ public class QuoteMediaApiTest {
 		Assert.assertEquals(HttpStatus.OK, result.getStatusCode());
 		Assert.assertEquals(qResponse, result.getBody());
 	}
+
+	/**
+	 * BAD_REQUEST test to get the most recent quote for a given symbol
+	 * 
+	 * @throws Exception
+	 */
 
 	@Test
 	public void testGetQuoteBadRequest() throws Exception {
@@ -85,6 +103,11 @@ public class QuoteMediaApiTest {
 		Assert.assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
 	}
 
+	/**
+	 * NOT_FOUND test to get the most recent quote for a given symbol
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testGetQuoteNotFound() throws Exception {
 
@@ -98,6 +121,12 @@ public class QuoteMediaApiTest {
 		Assert.assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
 	}
 
+	/**
+	 * SUCCESS (OK) test to retrieve the symbol with the highest ask for the given
+	 * day
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testGetSymbolDaySuccess() throws Exception {
 
@@ -113,6 +142,12 @@ public class QuoteMediaApiTest {
 		Assert.assertEquals(sResponse, result.getBody());
 	}
 
+	/**
+	 * BAD_REQUEST test to retrieve the symbol with the highest ask for the given
+	 * day
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testGetSymbolDayBadRequest() throws Exception {
 
@@ -126,6 +161,11 @@ public class QuoteMediaApiTest {
 		Assert.assertEquals(HttpStatus.BAD_REQUEST, result.getStatusCode());
 	}
 
+	/**
+	 * NOT_FOUND test to retrieve the symbol with the highest ask for the given day
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testGetSymbolDayNotFound() throws Exception {
 
@@ -139,6 +179,11 @@ public class QuoteMediaApiTest {
 		Assert.assertEquals(HttpStatus.NOT_FOUND, result.getStatusCode());
 	}
 
+	/**
+	 * UNAUTHORIZED test when no user and password are provided
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testGetQuoteNoAuth() throws Exception {
 		// Create new template with no auth
@@ -154,6 +199,11 @@ public class QuoteMediaApiTest {
 		Assert.assertEquals(HttpStatus.UNAUTHORIZED, result.getStatusCode());
 	}
 
+	/**
+	 * UNAUTHORIZED test when user or password are wrong
+	 * 
+	 * @throws Exception
+	 */
 	@Test
 	public void testGetQuoteWrongCredentials() throws Exception {
 		// Create new template with wrong auth data
